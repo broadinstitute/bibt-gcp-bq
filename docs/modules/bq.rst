@@ -1,7 +1,7 @@
 GCP BigQuery
 ~~~~~~~~~~~~
 
-See the official GCP BigQuery API documentation here: `link <>`_.
+See the official GCP BigQuery API documentation here: `link <https://googleapis.dev/python/bigquery/latest/index.html>`_.
 
 .. automodule:: bibt.bq.classes
   :members:
