@@ -67,7 +67,6 @@ class Client:
         ignore_unknown=True,
         autodetect_schema=False,
         schema_json_path=None,
-        credentials=None,
         await_result=True,
         config_params={},
         job_params={},
@@ -98,7 +97,7 @@ class Client:
             ] = bigquery.WriteDisposition.WRITE_TRUNCATE
         config_params["source_format"] = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
         config_params["ignore_unknown_values"] = ignore_unknown
-        config_params["autodetect_schema"] = autodetect_schema
+        config_params["autodetect"] = autodetect_schema
         job_params["source_uris"] = source_uri
         job_params["destination"] = self._client.get_table(table_ref)
         job_params["job_config"] = self._build_load_job_config(
