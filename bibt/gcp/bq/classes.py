@@ -181,9 +181,18 @@ class Client:
             _LOGGER.info("Not waiting for result of query, returning None.")
             return None
         results = query_job.result()
-        _LOGGER.info(f"Iterating over {len(results)} result rows...")
-        results_json = []
-        for row in results:
-            results_json.append(dict(row.items()))
-        _LOGGER.debug("Returning results as list of dicts.")
-        return results_json
+        if isinstance(results, bigquery._EmptyRowIterator):
+            return []
+        try:
+            _LOGGER.info(f"Iterating over {len(results)} result rows...")
+            results_json = []
+            for row in results:
+                results_json.append(dict(row.items()))
+            _LOGGER.debug("Returning results as list of dicts.")
+            return results_json
+        except Exception as e:
+            _LOGGER.error(
+                "Exception while iterating over results (returning "
+                f"an empty list): {type(e).__name__}: {e}"
+            )
+            return []
