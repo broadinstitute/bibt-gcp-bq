@@ -16,13 +16,16 @@ class Client:
         client = bq.Client()
         results = client.query(...)
 
+    :type project_id: ``str``
+    :param project_id: the project within which to create the client.
+
     :type credentials: :py:class:`google_auth:google.oauth2.credentials.Credentials`
     :param credentials: the credentials object to use when making API calls, if not
         using the account running the function for authentication.
     """
 
-    def __init__(self, project_id, credentials=None):
-        self._client = bigquery.Client(credentials=credentials)
+    def __init__(self, project_id=None, credentials=None):
+        self._client = bigquery.Client(project=project_id, credentials=credentials)
 
     def get_schema(self, bq_project, dataset, table):
         """
