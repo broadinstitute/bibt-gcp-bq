@@ -156,9 +156,6 @@ class Client:
 
         return
 
-    def _build_query_job_config(**kwargs):
-        return bigquery.QueryJobConfig(**kwargs)
-
     def query(self, query, query_config={}, await_result=True):
         """Submits a query job to BigQuery. May also be a DML query.
 
@@ -173,7 +170,10 @@ class Client:
         """
         if not await_result and "priority" not in query_config:
             query_config["priority"] = "BATCH"
-        config = self._build_query_job_config(**query_config)
+        if query_config:
+            config = bigquery.QueryJobConfig(**query_config)
+        else:
+            config = None
         _LOGGER.info(f"Sending query: {query}")
         _LOGGER.debug(f"Query job config: {query_config}")
         query_job = self._client.query(query, query_config=config)
