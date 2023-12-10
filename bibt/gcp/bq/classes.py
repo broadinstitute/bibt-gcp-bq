@@ -18,10 +18,12 @@ class Client:
 
     :type project_id: ``str``
     :param project_id: the project within which to create the client.
+        Optional, defaults to ``None``.
 
     :type credentials: :py:class:`google_auth:google.oauth2.credentials.Credentials`
     :param credentials: the credentials object to use when making API calls, if not
         using the account running the function for authentication.
+        Optional, defaults to ``None``.
     """
 
     def __init__(self, project_id=None, credentials=None):
