@@ -156,7 +156,7 @@ class Client:
 
         return
 
-    def query(self, query, query_config={}, await_result=True):
+    def query(self, query, query_config={}, await_result=True, parse_result=True):
         """Submits a query job to BigQuery. May also be a DML query.
 
         :param str query: The full query string.
@@ -166,6 +166,8 @@ class Client:
             query and return the results. If ``False``, will submit the job and then
             return ``None``. This may be useful for non-urgent DML queries.
             Defaults to ``True``.
+        :param bool parse_result: Whether or not to parse the query result into a list
+            of dicts. Defaults to ``True``.
         :return list: A list of dicts containing the query results, or ``None``.
         """
         if not await_result and "priority" not in query_config:
@@ -181,8 +183,8 @@ class Client:
             _LOGGER.info("Not waiting for result of query, returning None.")
             return None
         results = query_job.result()
-        if isinstance(results, bigquery._EmptyRowIterator):
-            return []
+        if not parse_result:
+            return results
         try:
             _LOGGER.info(f"Iterating over {len(results)} result rows...")
             results_json = []
