@@ -14,7 +14,7 @@ class Client:
         from bibt.gcp import bq
 
         client = bq.Client()
-        dataset = client.create_dataset(...)
+        results = client.query(...)
 
     :type credentials: :py:class:`google_auth:google.oauth2.credentials.Credentials`
     :param credentials: the credentials object to use when making API calls, if not
@@ -24,7 +24,7 @@ class Client:
     def __init__(self, project_id, credentials=None):
         self._client = bigquery.Client(credentials=credentials)
 
-    def _get_schema(self, bq_project, dataset, table):
+    def get_schema(self, bq_project, dataset, table):
         """
         Helper method to return the schema of a given table.
 
@@ -71,6 +71,32 @@ class Client:
         config_params={},
         job_params={},
     ):
+        """Uploads a newline-delimited JSON file to a BQ table.
+
+        :param str bucket_name: The name of the source bucket.
+        :param str blob_name: The name of the source blob.
+        :param str bq_project: The name of the destination project.
+        :param str dataset: The name of the destination dataset.
+        :param str table: The name of the destination table.
+        :param bool append: Whether or not to append to the
+            destination table, defaults to ``True``.
+        :param bool ignore_unknown: Whether or not to ignore
+            unknown values, defaults to ``True``.
+        :param bool autodetect_schema: Whether or not to infer the
+            schema from a sample of the data, defaults to ``False``.
+        :param str schema_json_path: The path to a JSON file
+            containing a BQ table schema, defaults to ``None``.
+        :param bool await_result: Whether or not to wait for
+            the query results, defaults to ``True``.
+        :param dict config_params: Any additional query job
+            config parameters, defaults to ``{}``. Note that any
+            arguments passed to the function will overwrite key/values
+            in this dict.
+        :param dict job_params: Any additional job config
+            parameters, defaults to ``{}``. Note that any
+            arguments passed to the function will overwrite key/values
+            in this dict.
+        """
         source_uri = f"gs://{bucket_name}/{blob_name}"
         table_ref = f"{bq_project}.{dataset}.{table}"
         if schema_json_path:
@@ -129,6 +155,17 @@ class Client:
         return bigquery.QueryJobConfig(**kwargs)
 
     def query(self, query, query_config={}, await_result=True):
+        """Submits a query job to BigQuery. May also be a DML query.
+
+        :param str query: The full query string.
+        :param dict query_config: Any additional parameters for the query job config,
+            defaults to ``{}``.
+        :param bool await_result: Whether or not to submit the job as an ``INTERACTIVE``
+            query and return the results. If ``False``, will submit the job and then
+            return ``None``. This may be useful for non-urgent DML queries.
+            Defaults to ``True``.
+        :return list: A list of dicts containing the query results, or ``None``.
+        """
         if not await_result and "priority" not in query_config:
             query_config["priority"] = "BATCH"
         config = self._build_query_job_config(**query_config)
