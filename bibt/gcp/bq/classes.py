@@ -183,6 +183,8 @@ class Client:
             _LOGGER.info("Not waiting for result of query, returning None.")
             return None
         results = query_job.result()
+        if isinstance(results, bigquery.table._EmptyRowIterator):
+            return None
         if not parse_result:
             return results
         try:
