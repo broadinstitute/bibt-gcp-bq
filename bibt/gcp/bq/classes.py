@@ -176,7 +176,7 @@ class Client:
             config = None
         _LOGGER.info(f"Sending query: {query}")
         _LOGGER.debug(f"Query job config: {query_config}")
-        query_job = self._client.query(query, query_config=config)
+        query_job = self._client.query(query, job_config=config)
         if not await_result:
             _LOGGER.info("Not waiting for result of query, returning None.")
             return None
