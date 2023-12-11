@@ -1,3 +1,4 @@
-bumpversion
-pre-commit
-pytest
+bump2version==1.0.1
+pre-commit==3.6.0
+pytest==7.4.3
+virtualenv==20.25.0
