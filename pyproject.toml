@@ -20,7 +20,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
   "Topic :: Utilities",
 ]
-dependencies = ["google-cloud-bigquery==3.14.1"]
+dependencies = ["google-cloud-bigquery==3.15.0"]
 description = "Functionality often used by BITS Blue Team (GCP BigQuery Module)."
 name = "bibt-gcp-bq"
 readme = {file = "README.md", content-type = "text/markdown"}
