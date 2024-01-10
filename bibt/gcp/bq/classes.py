@@ -37,17 +37,17 @@ class Client:
         ):
             logging.info(
                 "Refreshing client credentials, token expired: "
-                f"[{self._client._transport._credentials.expiry}]"
+                f"[{str(self._client._transport._credentials.expiry)}]"
             )
             request = google.auth.transport.requests.Request()
             self._client._transport._credentials.refresh(request=request)
             logging.info(
-                f"New expiration: [{self._client._transport._credentials.expiry}]"
+                f"New expiration: [{str(self._client._transport._credentials.expiry)}]"
             )
         else:
             logging.debug(
                 f"Token is valid: [{self._client._transport._credentials.valid}] "
-                f"expires: [{self._client._transport._credentials.expiry}]"
+                f"expires: [{str(self._client._transport._credentials.expiry)}]"
             )
         return
 
