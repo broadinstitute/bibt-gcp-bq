@@ -1,5 +1,6 @@
 import logging
 
+import google.auth.transport.requests
 from google.api_core import exceptions as google_exceptions
 from google.cloud import bigquery
 
@@ -29,6 +30,12 @@ class Client:
     def __init__(self, project_id=None, credentials=None):
         self._client = bigquery.Client(project=project_id, credentials=credentials)
 
+    def _ensure_valid_client(self):
+        if not self._client._transport._credentials.valid:
+            request = google.auth.transport.requests.Request()
+            self._client._transport._credentials.refresh(request=request)
+        return
+
     def get_schema(self, bq_project, dataset, table):
         """
         Helper method to return the schema of a given table.
@@ -42,6 +49,7 @@ class Client:
         :type table: :py:class:`str`
         :param table: the bq table to fetch the schema for.
         """
+        self._ensure_valid_client()
         table = self._client.get_table(f"{bq_project}.{dataset}.{table}")
         return table.schema
 
@@ -104,6 +112,7 @@ class Client:
         """
         source_uri = f"gs://{bucket_name}/{blob_name}"
         table_ref = f"{bq_project}.{dataset}.{table}"
+        self._ensure_valid_client()
         if schema_json_path:
             if autodetect_schema:
                 _LOGGER.warn(
@@ -146,6 +155,7 @@ class Client:
         return bigquery.LoadJobConfig(**kwargs)
 
     def _submit_load_job(self, await_result, **kwargs):
+        self._ensure_valid_client()
         job = self._client.load_table_from_uri(
             **kwargs,
         )
@@ -178,6 +188,7 @@ class Client:
             config = None
         _LOGGER.info(f"Sending query: {query}")
         _LOGGER.debug(f"Query job config: {query_config}")
+        self._ensure_valid_client()
         query_job = self._client.query(query, job_config=config)
         if not await_result:
             _LOGGER.info("Not waiting for result of query, returning None.")
