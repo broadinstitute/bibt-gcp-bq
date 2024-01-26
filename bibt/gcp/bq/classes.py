@@ -30,7 +30,7 @@ class Client:
     def __init__(self, project_id=None, credentials=None):
         self._client = bigquery.Client(project=project_id, credentials=credentials)
 
-    def _ensure_valid_client(self):
+    def _ensure_valid_client(self, log_success=True):
         try:
             credentials = self._client._credentials
         except AttributeError:
@@ -48,10 +48,11 @@ class Client:
             credentials.refresh(request=request)
             logging.info(f"New expiration: [{str(credentials.expiry)}]")
         else:
-            logging.debug(
-                f"Token is valid: [{credentials.valid}] "
-                f"expires: [{str(credentials.expiry)}]"
-            )
+            if log_success:
+                logging.debug(
+                    f"Token is valid: [{credentials.valid}] "
+                    f"expires: [{str(credentials.expiry)}]"
+                )
         return
 
     def get_schema(self, bq_project, dataset, table):
@@ -182,6 +183,24 @@ class Client:
             self._monitor_job(job)
             _LOGGER.info("Upload complete.")
 
+        return
+
+    def insert_rows(self, bq_project, dataset, table, rows):
+        """Insert rows to a table using the Streaming Inserts API.
+
+        :param str bq_project: The name of the destination project.
+        :param str dataset: The name of the destination dataset.
+        :param str table: The name of the destination table.
+        :param list rows: A list of dicts to insert as rows.
+        """
+        self._ensure_valid_client(log_success=False)
+        table_id = f"{bq_project}.{dataset}.{table}"
+        logging.debug(f"Inserting {len(rows)} rows to table: [{table_id}]")
+        errors = self._client.insert_rows_json(table_id, rows)
+        if errors == []:
+            logging.debug("Rows added successfully.")
+        else:
+            logging.error(f"Encountered errors while inserting rows: {errors}")
         return
 
     def query(self, query, query_config={}, await_result=True, parse_result=True):
