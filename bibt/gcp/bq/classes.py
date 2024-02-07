@@ -248,3 +248,33 @@ class Client:
                 f"an empty list): {type(e).__name__}: {e}"
             )
             return []
+
+    def create_table(
+        self, bq_project, dataset, table, schema_json_path=None, exists_ok=False
+    ):
+        """Creates a table in BigQuery.
+
+        :param str bq_project: The name of the destination project.
+        :param str dataset: The name of the destination dataset.
+        :param str table: The name of the destination table.
+        :param str schema_json_path:  The path to a JSON file
+            containing a BQ table schema, defaults to ``None``.
+        :param bool exists_ok: Whether or not to ignore if the table already exists.
+            Defaults to ``False``.
+        """
+        self._ensure_valid_client()
+        table_ref = f"{bq_project}.{dataset}.{table}"
+        schema = None
+        if schema_json_path:
+            _LOGGER.debug("Trying to build schema...")
+            try:
+                schema = self._client.schema_from_json(schema_json_path)
+                _LOGGER.info("Schema built.")
+            except Exception as e:
+                _LOGGER.warn(f"Failed to build schema: {type(e).__name__}: {e}")
+                pass
+        _LOGGER.info(f"Attempting to create table [{table_ref}]...")
+        table = bigquery.Table(table_ref, schema=schema)
+        self._client.create_table(table, exists_ok=exists_ok)
+        _LOGGER.info(f"Table [{table_ref}] created.")
+        return
