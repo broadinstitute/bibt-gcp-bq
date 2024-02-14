@@ -117,9 +117,11 @@ class Client:
         :param bool autodetect_schema: Whether or not to infer the
             schema from a sample of the data, defaults to ``False``.
         :param str schema_json_path: The path to a JSON file
-            containing a BQ table schema, defaults to ``None``.
+            containing a BQ table schema OR a file object, defaults to ``None``.
         :param bool await_result: Whether or not to wait for
-            the query results, defaults to ``True``.
+            the job results, defaults to ``True``. When ``False``,
+            if the job fails the function won't raise an exception
+            (as it won't check).
         :param dict config_params: Any additional query job
             config parameters, defaults to ``{}``. Note that any
             arguments passed to the function will overwrite key/values
@@ -154,16 +156,21 @@ class Client:
             config_params[
                 "write_disposition"
             ] = bigquery.WriteDisposition.WRITE_TRUNCATE
-        config_params["source_format"] = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
-        config_params["ignore_unknown_values"] = ignore_unknown
-        config_params["autodetect"] = autodetect_schema
-        job_params["source_uris"] = source_uri
-        job_params["destination"] = self._client.get_table(table_ref)
-        job_params["job_config"] = self._build_load_job_config(
-            **config_params,
-        )
+        config_params = config_params | {
+            "source_format": bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+            "ignore_unknown_values": ignore_unknown,
+            "autodetect": autodetect_schema,
+        }
+        job_params = job_params | {
+            "source_uris": source_uri,
+            "destination": self._client.get_table(table_ref),
+            "job_config": self._build_load_job_config(
+                **config_params,
+            ),
+        }
         _LOGGER.info(f"Submitting job to upload [{source_uri}] to [{table_ref}]...")
         _LOGGER.debug(f"BigQuery load job params: {job_params}")
+        _LOGGER.debug(f"BigQuery config params: {config_params}")
         self._submit_load_job(
             await_result=await_result,
             **job_params,
