@@ -1,0 +1,27 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: bibt-gcp-bq
+  title: bibt-gcp-bq
+  description: "BITS Blue Team Utilities: GCP BigQuery Module"
+  links:
+    - url: https://bibt-gcp-bq.broadinstitute.org
+      title: bibt-gcp-bq
+      icon: dashboard
+  tags:
+    - bits
+    - bits-tools
+    - security
+  annotations:
+    backstage.io/kubernetes-id: bibt-gcp-bq
+    github.com/project-slug: broadinstitute/bibt-gcp-bq
+    google.com/cloudbuild-project-slug: bits-gke-clusters
+    google.com/cloudbuild-repo-name: bibt-gcp-bq
+    google.com/cloudbuild-location: us-east4
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  owner: bits-blue-team
+  lifecycle: production
+  system: bibt-libraries
