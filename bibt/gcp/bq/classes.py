@@ -243,11 +243,11 @@ class Client:
         if not parse_result:
             return results
         try:
-            _LOGGER.info(f"Iterating over {len(results)} result rows...")
+            _LOGGER.info("Iterating over result rows...")
             results_json = []
             for row in results:
                 results_json.append(dict(row.items()))
-            _LOGGER.debug("Returning results as list of dicts.")
+            _LOGGER.debug(f"Returning {len(results_json)} results as list of dicts.")
             return results_json
         except Exception as e:
             _LOGGER.error(
