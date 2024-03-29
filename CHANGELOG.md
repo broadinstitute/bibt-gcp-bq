@@ -2,6 +2,10 @@
 
 [PyPI History](https://pypi.org/project/bibt-gcp-bq/#history)
 
+## 0.0.22 (2024-03-29)
+
+- Added `upload_gcs_csv` functionality.
+
 ## 0.0.19 (2024-02-07)
 
 - Added `create_table` functionality with schema support.
