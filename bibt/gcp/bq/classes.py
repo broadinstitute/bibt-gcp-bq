@@ -142,9 +142,9 @@ class Client:
         if append:
             config_params["write_disposition"] = bigquery.WriteDisposition.WRITE_APPEND
         else:
-            config_params[
-                "write_disposition"
-            ] = bigquery.WriteDisposition.WRITE_TRUNCATE
+            config_params["write_disposition"] = (
+                bigquery.WriteDisposition.WRITE_TRUNCATE
+            )
         config_params = config_params | {
             "source_format": bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
             "ignore_unknown_values": ignore_unknown,
@@ -256,9 +256,9 @@ class Client:
         if append:
             config_params["write_disposition"] = bigquery.WriteDisposition.WRITE_APPEND
         else:
-            config_params[
-                "write_disposition"
-            ] = bigquery.WriteDisposition.WRITE_TRUNCATE
+            config_params["write_disposition"] = (
+                bigquery.WriteDisposition.WRITE_TRUNCATE
+            )
         config_params = config_params | {
             "source_format": bigquery.SourceFormat.CSV,
             "ignore_unknown_values": ignore_unknown,
