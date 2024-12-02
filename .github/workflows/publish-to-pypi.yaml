@@ -1,3 +1,10 @@
+###################################################################
+#                 !!! DO NOT CHANGE THIS FILE !!!                 #
+#              This file is managed by Terraform in               #
+#          the broadinstitute/bibt-terraform repository.          #
+#  Any changes made outside that repository WILL be overwritten.  #
+###################################################################
+
 name: Publish to PyPI
 
 on:
@@ -64,7 +71,7 @@ jobs:
     needs: ["build", "provenance"]
     environment:
       name: publish
-      url: https://pypi.org/p/bibt-gcp-bq
+      url: https://pypi.org/p/${{ github.event.repository.name }}
     permissions:
       contents: write
       id-token: write # Needed for trusted publishing to PyPI.
@@ -72,7 +79,7 @@ jobs:
 
     steps:
       - name: "Download dists"
-        uses: "actions/download-artifact@v4.1.2"
+        uses: "actions/download-artifact@v4.1.7"
         with:
           name: "dist"
           path: "dist/"
