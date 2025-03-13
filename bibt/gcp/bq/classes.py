@@ -37,19 +37,19 @@ class Client:
             try:
                 credentials = self._client._transport._credentials
             except AttributeError:
-                logging.error("Could not verify credentials in client.")
+                _LOGGER.error("Could not verify credentials in client.")
                 return
         if not credentials.valid or not credentials.expiry:
-            logging.info(
+            _LOGGER.info(
                 "Refreshing client credentials, token expired: "
                 f"[{str(credentials.expiry)}]"
             )
             request = google.auth.transport.requests.Request()
             credentials.refresh(request=request)
-            logging.info(f"New expiration: [{str(credentials.expiry)}]")
+            _LOGGER.info(f"New expiration: [{str(credentials.expiry)}]")
         else:
             if log_success:
-                logging.debug(
+                _LOGGER.debug(
                     f"Token is valid: [{credentials.valid}] "
                     f"expires: [{str(credentials.expiry)}]"
                 )
@@ -291,12 +291,12 @@ class Client:
         """
         self._ensure_valid_client(log_success=False)
         table_id = f"{bq_project}.{dataset}.{table}"
-        logging.debug(f"Inserting {len(rows)} rows to table: [{table_id}]")
+        _LOGGER.debug(f"Inserting {len(rows)} rows to table: [{table_id}]")
         errors = self._client.insert_rows_json(table_id, rows)
         if errors == []:
-            logging.debug("Rows added successfully.")
+            _LOGGER.debug("Rows added successfully.")
         else:
-            logging.error(f"Encountered errors while inserting rows: {errors}")
+            _LOGGER.error(f"Encountered errors while inserting rows: {errors}")
         return
 
     def query(self, query, query_config={}, await_result=True, parse_result=True):
